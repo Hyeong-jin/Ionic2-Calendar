@@ -171,6 +171,8 @@ export enum Step {
                 [dateFormatter]="dateFormatter"
                 [dir]="dir"
                 [lockSwipeToPrev]="lockSwipeToPrev"
+                [lockSwipes]="lockSwipes"
+                [spaceBetween]="spaceBetween"       
                 (onRangeChanged)="rangeChanged($event)"
                 (onEventSelected)="eventSelected($event)"
                 (onTimeSelected)="timeSelected($event)"
@@ -193,6 +195,10 @@ export enum Step {
                 [scrollToHour]="scrollToHour"
                 [preserveScrollPosition]="preserveScrollPosition"
                 [lockSwipeToPrev]="lockSwipeToPrev"
+                [lockSwipes]="lockSwipes"
+                [startHour]="startHour"
+                [endHour]="endHour"
+                [spaceBetween]="spaceBetween"
                 (onRangeChanged)="rangeChanged($event)"
                 (onEventSelected)="eventSelected($event)"
                 (onTimeSelected)="timeSelected($event)"
@@ -213,6 +219,10 @@ export enum Step {
                 [scrollToHour]="scrollToHour"
                 [preserveScrollPosition]="preserveScrollPosition"
                 [lockSwipeToPrev]="lockSwipeToPrev"
+                [lockSwipes]="lockSwipes"
+                [startHour]="startHour"
+                [endHour]="endHour"
+                [spaceBetween]="spaceBetween"
                 (onRangeChanged)="rangeChanged($event)"
                 (onEventSelected)="eventSelected($event)"
                 (onTimeSelected)="timeSelected($event)"
@@ -308,6 +318,11 @@ export class CalendarComponent implements OnInit {
     @Input() scrollToHour:number = 0;
     @Input() preserveScrollPosition:boolean = false;
     @Input() lockSwipeToPrev:boolean = false;
+    @Input() lockSwipes:boolean = false;
+    @Input() locale:string = "";
+    @Input() startHour:number = 0;
+    @Input() endHour:number = 24;
+    @Input() spaceBetween:number = 0;
 
     @Output() onCurrentDateChanged = new EventEmitter<Date>();
     @Output() onRangeChanged = new EventEmitter<IRange>();
@@ -319,7 +334,8 @@ export class CalendarComponent implements OnInit {
     private hourParts = 1;
     private currentDateChangedFromChildrenSubscription:Subscription;
 
-    constructor(private calendarService:CalendarService, @Inject(LOCALE_ID) private locale:string) {
+    constructor(private calendarService:CalendarService, @Inject(LOCALE_ID) private appLocale:string) {
+        this.locale = appLocale;
     }
 
     ngOnInit() {
@@ -331,6 +347,8 @@ export class CalendarComponent implements OnInit {
             }
         }
         this.hourParts = 60 / this.step;
+        this.startHour = parseInt(this.startHour.toString());
+        this.endHour = parseInt(this.endHour.toString());
         this.calendarService.queryMode = this.queryMode;
 
         this.currentDateChangedFromChildrenSubscription = this.calendarService.currentDateChangedFromChildren$.subscribe(currentDate => {
